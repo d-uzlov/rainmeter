@@ -121,6 +121,76 @@ HRESULT D2DBitmapLoader::LoadBitmapFromFile(const Canvas& canvas, D2DBitmap* bit
 	return cleanup(S_OK);
 }
 
+HRESULT D2DBitmapLoader::LoadBitmapFromPluginMeasure(const Canvas& canvas, D2DBitmap* bitmap, PluginImageData& imageData)
+{
+	if (!bitmap) return E_FAIL;
+
+	auto cleanup = [&](HRESULT hr) { return hr; };
+
+	Microsoft::WRL::ComPtr<IWICBitmapSource> source;
+	IWICBitmap* iwicBitmap;
+
+	HRESULT hr = Gfx::Canvas::c_WICFactory->CreateBitmapFromMemory(
+		imageData.width, imageData.height,
+		GUID_WICPixelFormat32bppBGRA,
+		imageData.width * 4 , (imageData.width * imageData.height * 4) * sizeof(unsigned char),
+		reinterpret_cast<BYTE*>(imageData.pixels), &iwicBitmap);
+	if (SUCCEEDED(hr))
+	{
+		hr = ConvertToD2DFormat(iwicBitmap, source);
+	}
+	if (FAILED(hr)) return cleanup(hr);
+
+	UINT width = 0U;
+	UINT height = 0U;
+	hr = source->GetSize(&width, &height);
+	if (FAILED(hr)) return cleanup(hr);
+
+	const auto maxBitmapSize = canvas.m_MaxBitmapSize;
+	if (width <= maxBitmapSize && height <= maxBitmapSize)
+	{
+		Microsoft::WRL::ComPtr<ID2D1Bitmap1> d2dbitmap;
+		hr = canvas.m_Target->CreateBitmapFromWicBitmap(
+			source.Get(),
+			nullptr,
+			d2dbitmap.GetAddressOf());
+		if (FAILED(hr)) return cleanup(hr);
+
+		bitmap->AddSegment(d2dbitmap, 0U, 0U, width, height);
+
+		bitmap->SetSize(width, height);
+		return cleanup(S_OK);
+	}
+
+	for (UINT y = 0U, H = (UINT)floor(height / maxBitmapSize); y <= H; ++y)
+	{
+		for (UINT x = 0U, W = (UINT)floor(width / maxBitmapSize); x <= W; ++x)
+		{
+			WICRect rcClip = {
+				(INT)(x * maxBitmapSize),
+				(INT)(y * maxBitmapSize),
+				(INT)(x == W ? (width - maxBitmapSize * x) : maxBitmapSize),		// If last x coordinate, find cutoff
+				(INT)(y == H ? (height - maxBitmapSize * y) : maxBitmapSize) };		// If last y coordinate, find cutoff
+
+			Microsoft::WRL::ComPtr<IWICBitmapSource> bitmapSegment;
+			hr = CropWICBitmapSource(rcClip, source.Get(), bitmapSegment);
+			if (FAILED(hr)) return cleanup(hr);
+
+			Microsoft::WRL::ComPtr<ID2D1Bitmap1> d2dbitmap;
+			hr = canvas.m_Target->CreateBitmapFromWicBitmap(
+				bitmapSegment.Get(),
+				nullptr,
+				d2dbitmap.GetAddressOf());
+			if (FAILED(hr)) return cleanup(hr);
+
+			bitmap->AddSegment(d2dbitmap, rcClip);
+		}
+	}
+
+	bitmap->SetSize(width, height);
+	return cleanup(S_OK);
+}
+
 bool D2DBitmapLoader::HasFileChanged(D2DBitmap* bitmap, const std::wstring& file)
 {
 	if (file.empty() || file != bitmap->GetPath()) return true;

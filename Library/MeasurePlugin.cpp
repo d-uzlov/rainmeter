@@ -19,6 +19,7 @@ MeasurePlugin::MeasurePlugin(Skin* skin, const WCHAR* name) : Measure(skin, name
 	m_PluginData(),
 	m_UpdateFunc(),
 	m_GetStringFunc(),
+	m_GetImageFunc(),
 	m_ExecuteBangFunc()
 {
 }
@@ -132,6 +133,7 @@ void MeasurePlugin::ReadOptions(ConfigParser& parser, const WCHAR* section)
 	m_ReloadFunc = GetProcAddress(m_Plugin, "Reload");
 	m_UpdateFunc = GetProcAddress(m_Plugin, "Update");
 	m_GetStringFunc = GetProcAddress(m_Plugin, "GetString");
+	m_GetImageFunc = GetProcAddress(m_Plugin, "GetImage");
 	m_ExecuteBangFunc = GetProcAddress(m_Plugin, "ExecuteBang");
 
 	// Remove current directory from DLL search path
@@ -218,6 +220,20 @@ const WCHAR* MeasurePlugin::GetStringValue()
 }
 
 /*
+** Gets the image data from plugin (if available).
+**
+*/
+const WCHAR* MeasurePlugin::GetImageData(PluginImageData &imageData)
+{
+	if (m_GetImageFunc)
+	{
+		const WCHAR* ret = ((GETIMAGE)m_GetImageFunc)(m_PluginData, imageData);
+		if (ret) return L"";
+	}
+	return nullptr;
+}
+
+/*
 ** Sends a bang to the plugin
 **
 */
@@ -267,6 +283,7 @@ bool MeasurePlugin::CommandWithReturn(const std::wstring& command, std::wstring&
 			function == "Reload" ||
 			function == "Update" ||
 			function == "GetString" ||
+			function == "GetImage" ||
 			function == "ExecuteBang" ||
 			function == "Finalize" ||
 			function == "Update2" ||				// Old API

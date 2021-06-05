@@ -9,6 +9,7 @@
 #define RM_GFX_UTIL_D2DBITMAPLOADER_H_
 
 #include "../D2DBitmap.h"
+#include "../../../Plugins/API/RainmeterAPI.h"
 
 namespace Gfx {
 namespace Util {
@@ -17,6 +18,7 @@ class D2DBitmapLoader
 {
 public:
 	static HRESULT LoadBitmapFromFile(const Canvas& canvas, D2DBitmap* bitmap);
+	static HRESULT LoadBitmapFromPluginMeasure(const Canvas& canvas, D2DBitmap* bitmap, PluginImageData& imageData);
 	static bool HasFileChanged(D2DBitmap* bitmap, const std::wstring& file);
 	static HRESULT GetFileInfo(const std::wstring& path, FileInfo* fileInfo);
 

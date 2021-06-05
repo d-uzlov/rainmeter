@@ -14,6 +14,7 @@
 #include "Skin.h"
 #include "ImageCache.h"
 #include "ImageOptions.h"
+#include "MeasurePlugin.h"
 
 /*
 ** Helper macro to define an array of option names. A prefix must be given.
@@ -69,6 +70,7 @@ public:
 
 	void ReadOptions(ConfigParser& parser, const WCHAR* section, const WCHAR* imagePath = L"");
 	bool LoadImageFromFile(const std::wstring& imageName);
+	bool LoadImageFromPluginMeasure(MeasurePlugin* mPlugin);
 
 private:
 

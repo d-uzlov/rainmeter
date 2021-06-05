@@ -23,6 +23,7 @@ typedef void (*NEWRELOAD)(void*, void*, double*);
 typedef void (*NEWFINALIZE)(void*);
 typedef double (*NEWUPDATE)(void*);
 typedef LPCWSTR (*NEWGETSTRING)(void*);
+typedef LPCWSTR (*GETIMAGE)(void*, PluginImageData&);
 typedef void (*NEWEXECUTEBANG)(void*, LPCWSTR);
 
 typedef LPCWSTR(*CUSTOMFUNCTION)(void*, const int, const WCHAR* argv[]);
@@ -39,6 +40,8 @@ public:
 	virtual UINT GetTypeID() { return TypeID<MeasurePlugin>(); }
 
 	virtual const WCHAR* GetStringValue();
+	const WCHAR* GetImageData(PluginImageData &imageData);
+	bool HasImageData() { return m_GetImageFunc != nullptr; }
 	virtual void Command(const std::wstring& command);
 
 	bool CommandWithReturn(const std::wstring& command, std::wstring& strValue);
@@ -70,6 +73,7 @@ private:
 
 	void* m_UpdateFunc;
 	void* m_GetStringFunc;
+	void* m_GetImageFunc;
 	void* m_ExecuteBangFunc;
 };
 

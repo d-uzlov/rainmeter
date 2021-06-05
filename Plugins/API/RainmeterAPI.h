@@ -16,6 +16,14 @@
 
 #define PLUGIN_EXPORT EXTERN_C __declspec(dllexport)
 
+struct PluginImageData
+{
+	UINT8* pixels;
+	UINT width;
+	UINT height;
+	UINT64 timestamp;
+};
+
 //
 // Exported functions
 //
