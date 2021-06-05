@@ -41,7 +41,7 @@ private:
 		DRAWMODE_KEEPRATIOANDCROP
 	};
 
-	void LoadImage(const std::wstring& imageName, bool bLoadAlways);
+	void LoadImageFromFile(const std::wstring& imageName, bool bLoadAlways);
 
 	GeneralImage m_Image;
 	std::wstring m_ImageName;

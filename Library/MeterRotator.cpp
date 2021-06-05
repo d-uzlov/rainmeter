@@ -41,7 +41,7 @@ void MeterRotator::Initialize()
 	// Load the bitmaps if defined
 	if (!m_ImageName.empty())
 	{
-		m_Image.LoadImage(m_ImageName);
+		m_Image.LoadImageFromFile(m_ImageName);
 	}
 	else if (m_Image.IsLoaded())
 	{

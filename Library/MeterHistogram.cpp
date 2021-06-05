@@ -105,7 +105,7 @@ void MeterHistogram::Initialize()
 		// Load the bitmaps if defined
 		if (!m_PrimaryImageName.empty())
 		{
-			m_PrimaryImage.LoadImage(m_PrimaryImageName);
+			m_PrimaryImage.LoadImageFromFile(m_PrimaryImageName);
 
 			if (m_PrimaryImage.IsLoaded())
 			{
@@ -133,7 +133,7 @@ void MeterHistogram::Initialize()
 
 		if (!m_SecondaryImageName.empty())
 		{
-			m_SecondaryImage.LoadImage(m_SecondaryImageName);
+			m_SecondaryImage.LoadImageFromFile(m_SecondaryImageName);
 		}
 		else if (m_SecondaryImage.IsLoaded())
 		{
@@ -142,7 +142,7 @@ void MeterHistogram::Initialize()
 
 		if (!m_OverlapImageName.empty())
 		{
-			m_OverlapImage.LoadImage(m_OverlapImageName);
+			m_OverlapImage.LoadImageFromFile(m_OverlapImageName);
 		}
 		else if (m_OverlapImage.IsLoaded())
 		{

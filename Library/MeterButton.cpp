@@ -42,7 +42,7 @@ void MeterButton::Initialize()
 	// Load the bitmaps if defined
 	if (!m_ImageName.empty())
 	{
-		m_Image.LoadImage(m_ImageName);
+		m_Image.LoadImageFromFile(m_ImageName);
 
 		if (m_Image.IsLoaded())
 		{

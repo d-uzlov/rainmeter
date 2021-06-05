@@ -2688,7 +2688,7 @@ bool Skin::ResizeWindow(bool reset)
 		m_Background = new GeneralImage(L"Background", nullptr, false, this);
 
 		m_Background->ReadOptions(m_Parser, L"Rainmeter");
-		m_Background->LoadImage(m_BackgroundName);
+		m_Background->LoadImageFromFile(m_BackgroundName);
 
 		auto bitmap = m_Background->GetImage();
 

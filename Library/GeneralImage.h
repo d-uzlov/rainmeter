@@ -68,7 +68,7 @@ public:
 	Gfx::D2DBitmap* GetImage() { return m_BitmapProcessed ? m_BitmapProcessed->GetBitmap() : nullptr; }
 
 	void ReadOptions(ConfigParser& parser, const WCHAR* section, const WCHAR* imagePath = L"");
-	bool LoadImage(const std::wstring& imageName);
+	bool LoadImageFromFile(const std::wstring& imageName);
 
 private:
 

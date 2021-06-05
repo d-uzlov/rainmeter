@@ -225,7 +225,7 @@ void GeneralImage::ReadOptions(ConfigParser& parser, const WCHAR* section, const
 	m_Options.m_UseExifOrientation = parser.ReadBool(section, m_OptionArray[OptionIndexUseExifOrientation], false);
 }
 
-bool GeneralImage::LoadImage(const std::wstring& imageName)
+bool GeneralImage::LoadImageFromFile(const std::wstring& imageName)
 {
 	if (!m_Skin || imageName.empty())
 	{
