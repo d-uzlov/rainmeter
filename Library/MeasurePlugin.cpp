@@ -223,11 +223,11 @@ const WCHAR* MeasurePlugin::GetStringValue()
 ** Gets the image data from plugin (if available).
 **
 */
-const WCHAR* MeasurePlugin::GetImageData(PluginImageData &imageData)
+const WCHAR* MeasurePlugin::GetImageData(UINT8** imagePixels, INT32& imageWidth, INT32& imageHeight, INT64& imageTimestamp, void* reserved)
 {
 	if (m_GetImageFunc)
 	{
-		const WCHAR* ret = ((GETIMAGE)m_GetImageFunc)(m_PluginData, imageData);
+		bool ret = ((GETIMAGE)m_GetImageFunc)(m_PluginData, imagePixels, imageWidth, imageHeight, imageTimestamp, reserved);
 		if (ret) return L"";
 	}
 	return nullptr;

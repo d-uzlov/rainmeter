@@ -10,7 +10,6 @@
 
 #include "Meter.h"
 #include "GeneralImage.h"
-#include "MeasurePlugin.h"
 
 class MeterImage : public Meter
 {
@@ -43,7 +42,7 @@ private:
 	};
 
 	void LoadImageFromFile(const std::wstring& imageName, bool bLoadAlways);
-	void LoadImageFromPluginMeasure(MeasurePlugin* mPlugin);
+	bool LoadImageFromPluginMeasure(MeasurePlugin* mPlugin);
 	void CalcImageDimensions();
 
 	GeneralImage m_Image;

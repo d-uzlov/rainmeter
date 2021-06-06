@@ -60,10 +60,9 @@ void MeterImage::LoadImageFromFile(const std::wstring& imageName, bool bLoadAlwa
 	CalcImageDimensions();
 }
 
-void MeterImage::LoadImageFromPluginMeasure(MeasurePlugin *mPlugin)
+bool MeterImage::LoadImageFromPluginMeasure(MeasurePlugin *mPlugin)
 {
-	m_Image.LoadImageFromPluginMeasure(mPlugin);
-	CalcImageDimensions();
+	return m_Image.LoadImageFromPluginMeasure(mPlugin);
 }
 
 /*
@@ -184,10 +183,13 @@ bool MeterImage::Update()
 				if (m_ImageName.empty())
 				{
 					auto plugin_measure = dynamic_cast<MeasurePlugin *>(m_Measures[0]);
-					if (plugin_measure != nullptr && plugin_measure->HasImageData())
+					if (plugin_measure != nullptr)
 					{
-						LoadImageFromPluginMeasure(plugin_measure);
-						return true;
+						if (LoadImageFromPluginMeasure(plugin_measure))
+						{
+							CalcImageDimensions();
+							return true;
+						}
 					}
 					m_ImageNameResult = m_Measures[0]->GetStringOrFormattedValue(AUTOSCALE_OFF, 1.0, 0, false);
 				}

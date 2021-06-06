@@ -71,57 +71,11 @@ HRESULT D2DBitmapLoader::LoadBitmapFromFile(const Canvas& canvas, D2DBitmap* bit
 	const int orientation = GetExifOrientation(decoderFrame.Get());
 	bitmap->SetOrientation(orientation);
 
-	UINT width = 0U;
-	UINT height = 0U;
-	hr = source->GetSize(&width, &height);
-	if (FAILED(hr)) return cleanup(hr);
-
-	const auto maxBitmapSize = canvas.m_MaxBitmapSize;
-	if (width <= maxBitmapSize && height <= maxBitmapSize)
-	{
-		Microsoft::WRL::ComPtr<ID2D1Bitmap1> d2dbitmap;
-		hr = canvas.m_Target->CreateBitmapFromWicBitmap(
-			source.Get(),
-			nullptr,
-			d2dbitmap.GetAddressOf());
-		if (FAILED(hr)) return cleanup(hr);
-
-		bitmap->AddSegment(d2dbitmap, 0U, 0U, width, height);
-
-		bitmap->SetSize(width, height);
-		return cleanup(S_OK);
-	}
-
-	for (UINT y = 0U, H = (UINT)floor(height / maxBitmapSize); y <= H; ++y)
-	{
-		for (UINT x = 0U, W = (UINT)floor(width / maxBitmapSize); x <= W; ++x)
-		{
-			WICRect rcClip = {
-				(INT)(x * maxBitmapSize),
-				(INT)(y * maxBitmapSize),
-				(INT)(x == W ? (width - maxBitmapSize * x) : maxBitmapSize),		// If last x coordinate, find cutoff
-				(INT)(y == H ? (height - maxBitmapSize * y) : maxBitmapSize) };		// If last y coordinate, find cutoff
-
-			Microsoft::WRL::ComPtr<IWICBitmapSource> bitmapSegment;
-			hr = CropWICBitmapSource(rcClip, source.Get(), bitmapSegment);
-			if (FAILED(hr)) return cleanup(hr);
-
-			Microsoft::WRL::ComPtr<ID2D1Bitmap1> d2dbitmap;
-			hr = canvas.m_Target->CreateBitmapFromWicBitmap(
-				bitmapSegment.Get(),
-				nullptr,
-				d2dbitmap.GetAddressOf());
-			if (FAILED(hr)) return cleanup(hr);
-
-			bitmap->AddSegment(d2dbitmap, rcClip);
-		}
-	}
-
-	bitmap->SetSize(width, height);
-	return cleanup(S_OK);
+	return CreateBitmap(canvas, bitmap, hr, source, fileHandle);
 }
 
-HRESULT D2DBitmapLoader::LoadBitmapFromPluginMeasure(const Canvas& canvas, D2DBitmap* bitmap, PluginImageData& imageData)
+HRESULT D2DBitmapLoader::LoadBitmapFromMemory(const Canvas& canvas, D2DBitmap* bitmap,
+	UINT8* imagePixels, INT32 imageWidth, INT32 imageHeight, INT64 imageTimestamp)
 {
 	if (!bitmap) return E_FAIL;
 
@@ -131,15 +85,31 @@ HRESULT D2DBitmapLoader::LoadBitmapFromPluginMeasure(const Canvas& canvas, D2DBi
 	IWICBitmap* iwicBitmap;
 
 	HRESULT hr = Gfx::Canvas::c_WICFactory->CreateBitmapFromMemory(
-		imageData.width, imageData.height,
-		GUID_WICPixelFormat32bppBGRA,
-		imageData.width * 4 , (imageData.width * imageData.height * 4) * sizeof(unsigned char),
-		reinterpret_cast<BYTE*>(imageData.pixels), &iwicBitmap);
+		(UINT)imageWidth, (UINT)imageHeight,
+		GUID_WICPixelFormat32bppBGRA, (UINT)imageWidth * 4 ,
+		((UINT)imageWidth * (UINT)imageHeight * 4) * sizeof(unsigned char),
+		reinterpret_cast<BYTE*>(imagePixels), &iwicBitmap);
+
 	if (SUCCEEDED(hr))
 	{
 		hr = ConvertToD2DFormat(iwicBitmap, source);
+		iwicBitmap->Release();
 	}
-	if (FAILED(hr)) return cleanup(hr);
+	if (FAILED(hr)) {
+		iwicBitmap->Release();
+		return cleanup(hr);
+	}
+
+	return CreateBitmap(canvas, bitmap, hr, source);
+}
+
+HRESULT D2DBitmapLoader::CreateBitmap(const Canvas& canvas, D2DBitmap* bitmap, HRESULT& hr,
+	Microsoft::WRL::ComPtr<IWICBitmapSource> source, HANDLE fileHandle)
+{
+	auto cleanup = [&](HRESULT hr) {
+		if (fileHandle) CloseHandle(fileHandle);
+		return hr;
+	};
 
 	UINT width = 0U;
 	UINT height = 0U;

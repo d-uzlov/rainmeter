@@ -309,21 +309,26 @@ bool GeneralImage::LoadImageFromPluginMeasure(MeasurePlugin* mPlugin)
 	info.m_Path = std::wstring{ L"measure://" } + mPlugin->GetSkin()->GetFilePath() + L"/" + mPlugin->GetName();
 	info.m_FileSize = 0;
 
-	PluginImageData imageData {0};
-	bool success = mPlugin->GetImageData(imageData);
+	INT32 imageWidth = 0;
+	INT32 imageHeight = 0;
+	INT64 imageTimestamp = 0;
+	UINT8* imagePixels = nullptr;
+
+	auto success = mPlugin->GetImageData(&imagePixels, imageWidth, imageHeight, imageTimestamp, nullptr);
 	if (!success)
 	{
 		DisposeImage();
 		return false;
 	}
 
-	info.m_FileTime = imageData.timestamp;
+	info.m_FileTime = imageTimestamp;
 
 	ImageCacheHandle* handle = GetImageCache().Get(info);
 	if (!handle)
 	{
-		auto bitmap = new Gfx::D2DBitmap(nullptr);
-		HRESULT hr = Gfx::Util::D2DBitmapLoader::LoadBitmapFromPluginMeasure(m_Skin->GetCanvas(), bitmap, imageData);
+		auto bitmap = new Gfx::D2DBitmap();
+		HRESULT hr = Gfx::Util::D2DBitmapLoader::LoadBitmapFromMemory(m_Skin->GetCanvas(), bitmap,
+			imagePixels, imageWidth, imageHeight, imageTimestamp);
 
 		if (SUCCEEDED(hr))
 		{

@@ -56,7 +56,7 @@ class D2DBitmap
 {
 public:
 	D2DBitmap(const std::wstring& path, int exifOrientation = 0);
-	D2DBitmap(void* ptr); // void* ptr is just to make a new constructor, since the default is private (it must be for a reason)
+	D2DBitmap();
 	~D2DBitmap();
 
 	UINT GetWidth() const{ return m_Width; }
@@ -93,7 +93,6 @@ private:
 	friend class Util::D2DEffectStream;
 	friend class Gfx::RenderTexture;
 
-	D2DBitmap();
 	D2DBitmap(const D2DBitmap& other) = delete;
 	D2DBitmap& operator=(D2DBitmap other) = delete;
 
