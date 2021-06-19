@@ -312,9 +312,9 @@ bool GeneralImage::LoadImageFromPluginMeasure(MeasurePlugin* mPlugin)
 	INT32 imageWidth = 0;
 	INT32 imageHeight = 0;
 	INT64 imageTimestamp = 0;
-	UINT8* imagePixels = nullptr;
+	UINT32* imagePixels = nullptr;
 
-	auto success = mPlugin->GetImageData(&imagePixels, imageWidth, imageHeight, imageTimestamp, nullptr);
+	auto success = mPlugin->GetImageData(imagePixels, imageWidth, imageHeight, imageTimestamp);
 	if (!success)
 	{
 		DisposeImage();
@@ -328,7 +328,7 @@ bool GeneralImage::LoadImageFromPluginMeasure(MeasurePlugin* mPlugin)
 	{
 		auto bitmap = new Gfx::D2DBitmap();
 		HRESULT hr = Gfx::Util::D2DBitmapLoader::LoadBitmapFromMemory(m_Skin->GetCanvas(), bitmap,
-			imagePixels, imageWidth, imageHeight, imageTimestamp);
+			imagePixels, imageWidth, imageHeight);
 
 		if (SUCCEEDED(hr))
 		{

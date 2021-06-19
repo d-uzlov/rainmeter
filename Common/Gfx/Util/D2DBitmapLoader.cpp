@@ -75,7 +75,7 @@ HRESULT D2DBitmapLoader::LoadBitmapFromFile(const Canvas& canvas, D2DBitmap* bit
 }
 
 HRESULT D2DBitmapLoader::LoadBitmapFromMemory(const Canvas& canvas, D2DBitmap* bitmap,
-	UINT8* imagePixels, INT32 imageWidth, INT32 imageHeight, INT64 imageTimestamp)
+	UINT32* imagePixels, INT32 imageWidth, INT32 imageHeight)
 {
 	if (!bitmap) return E_FAIL;
 
