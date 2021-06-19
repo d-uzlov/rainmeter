@@ -62,7 +62,12 @@ void MeterImage::LoadImageFromFile(const std::wstring& imageName, bool bLoadAlwa
 
 bool MeterImage::LoadImageFromPluginMeasure(MeasurePlugin *mPlugin)
 {
-	return m_Image.LoadImageFromPluginMeasure(mPlugin);
+	auto loaded = m_Image.LoadImageFromPluginMeasure(mPlugin);
+	if (loaded)
+	{
+		CalcImageDimensions();
+	}
+	return loaded;
 }
 
 /*
@@ -187,7 +192,6 @@ bool MeterImage::Update()
 					{
 						if (LoadImageFromPluginMeasure(plugin_measure))
 						{
-							CalcImageDimensions();
 							return true;
 						}
 					}
