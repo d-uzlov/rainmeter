@@ -45,6 +45,9 @@ public:
 
 	bool CommandWithReturn(const std::wstring& command, std::wstring& strValue);
 
+	const WCHAR* setConfig(const WCHAR* name, const WCHAR* value);
+	const WCHAR* getConfig(const WCHAR* name) const;
+
 protected:
 	virtual void ReadOptions(ConfigParser& parser, const WCHAR* section);
 	virtual void UpdateValue();
@@ -74,6 +77,8 @@ private:
 	void* m_GetStringFunc;
 	void* m_GetImageFunc;
 	void* m_ExecuteBangFunc;
+
+	bool m_AllowImageTransfer;
 };
 
 #endif

@@ -57,6 +57,27 @@ LPCWSTR __stdcall RmPathToAbsolute(void* rm, LPCWSTR relativePath)
 	return g_Buffer.c_str();
 }
 
+extern "C" {
+	static LPCWSTR __stdcall RmGet_GetPluginConfig(void* rm, LPCWSTR name)
+	{
+		if (rm == nullptr)
+		{
+			return nullptr;
+		}
+		MeasurePlugin* measure = (MeasurePlugin*)rm;
+		return measure->getConfig(name);
+	}
+	static LPCWSTR __stdcall RmGet_SetPluginConfig(void* rm, LPCWSTR name, LPCWSTR value)
+	{
+		if (rm == nullptr)
+		{
+			return nullptr;
+		}
+		MeasurePlugin* measure = (MeasurePlugin*)rm;
+		return measure->setConfig(name, value);
+	}
+}
+
 void* __stdcall RmGet(void* rm, int type)
 {
 	MeasurePlugin* measure = (MeasurePlugin*)rm;
@@ -90,6 +111,16 @@ void* __stdcall RmGet(void* rm, int type)
 			Skin* window = measure->GetSkin();
 			if (!window) break;
 			return (void*)window->GetWindow();
+		}
+
+	case RMG_MEASURECONFIGSET:
+		{
+			return (void*)RmGet_SetPluginConfig;
+		}
+
+	case RMG_MEASURECONFIGGET:
+		{
+			return (void*)RmGet_GetPluginConfig;
 		}
 	}
 

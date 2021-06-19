@@ -139,7 +139,9 @@ enum RmGetType
 	RMG_SKIN             = 1,
 	RMG_SETTINGSFILE     = 2,
 	RMG_SKINNAME         = 3,
-	RMG_SKINWINDOWHANDLE = 4
+	RMG_SKINWINDOWHANDLE = 4,
+	RMG_MEASURECONFIGSET = 5,
+	RMG_MEASURECONFIGGET = 6,
 };
 
 /// <summary>
@@ -349,6 +351,86 @@ __inline LPCWSTR RmGetSkinName(void* rm)
 __inline HWND RmGetSkinWindow(void* rm)
 {
 	return (HWND)RmGet(rm, RMG_SKINWINDOWHANDLE);
+}
+
+/// <summary>
+/// Changes how the measure behaves. See the documentation to learn about allowed values.
+/// </summary>
+/// <remarks>Obtain using RmGetPluginConfigSet() in the Initialize function and set all values that you need</remarks>
+/// <param name="rm">Pointer to the plugin measure</param>
+/// <returns>Returns a pointer to the function</returns>
+/// <example>
+/// <code>
+/// PLUGIN_EXPORT void Initialize(void** data, void* rm)
+/// {
+/// 	Measure* measure = new Measure;
+/// 	*data = measure;
+/// 	auto RmPluginConfigSet = RmGetPluginConfigSet(rm);
+/// 	RmPluginConfigSet(L"image-transfer", L"true");
+/// }
+/// </code>
+/// </example>
+typedef const WCHAR* (*t_RmPluginConfigSet)(void* rm, LPCWSTR name, LPCWSTR value);
+
+/// <summary>
+/// Returns a pointer to the function RmPluginConfigSet.
+/// </summary>
+/// <remarks>Call RmGetPluginConfigSet() in the Initialize function and set all values that you need</remarks>
+/// <param name="rm">Pointer to the plugin measure</param>
+/// <returns>Returns a pointer to the function</returns>
+/// <example>
+/// <code>
+/// PLUGIN_EXPORT void Initialize(void** data, void* rm)
+/// {
+/// 	Measure* measure = new Measure;
+/// 	*data = measure;
+/// 	auto RmPluginConfigSet = RmGetPluginConfigSet(rm);
+/// }
+/// </code>
+/// </example>
+__inline t_RmPluginConfigSet RmGetPluginConfigSet(void* rm)
+{
+	return (t_RmPluginConfigSet)RmGet(rm, RMG_MEASURECONFIGSET);
+}
+
+/// <summary>
+/// Returns current value of the configuration. See the documentation to learn about allowed values.
+/// </summary>
+/// <remarks>Obtain using RmGetPluginConfigGet() in the Initialize function and check the values</remarks>
+/// <param name="rm">Pointer to the plugin measure</param>
+/// <returns>Returns a pointer to the function</returns>
+/// <example>
+/// <code>
+/// PLUGIN_EXPORT void Initialize(void** data, void* rm)
+/// {
+/// 	Measure* measure = new Measure;
+/// 	*data = measure;
+/// 	auto RmPluginConfigGet = RmGetPluginConfigGet(rm);
+/// 	auto value = RmPluginConfigGet(L"image-transfer");
+/// }
+/// </code>
+/// </example>
+typedef const WCHAR* (*t_RmPluginConfigGet)(void* rm, LPCWSTR name);
+
+/// <summary>
+/// Returns a pointer to the function RmPluginConfigGet.
+/// </summary>
+/// <remarks>Call RmGetPluginConfigGet() in the Initialize function and check the values</remarks>
+/// <param name="rm">Pointer to the plugin measure</param>
+/// <returns>Returns a pointer to the function</returns>
+/// <example>
+/// <code>
+/// PLUGIN_EXPORT void Initialize(void** data, void* rm)
+/// {
+/// 	Measure* measure = new Measure;
+/// 	*data = measure;
+/// 	auto RmPluginConfigGet = RmGetPluginConfigGet(rm);
+/// }
+/// </code>
+/// </example>
+__inline t_RmPluginConfigGet RmGetPluginConfigGet(void* rm)
+{
+	return (t_RmPluginConfigGet)RmGet(rm, RMG_MEASURECONFIGGET);
 }
 
 /// <summary>
