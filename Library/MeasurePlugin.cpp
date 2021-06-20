@@ -228,7 +228,7 @@ bool MeasurePlugin::GetImageData(UINT32*& imagePixels, INT32& imageWidth, INT32&
 	if (m_AllowImageTransfer && m_GetImageFunc)
 	{
 		const auto res = ((GETIMAGE)m_GetImageFunc)(m_PluginData, &imagePixels, &imageWidth, &imageHeight, &imageTimestamp);
-		return res != 0;
+		return res != nullptr;
 	}
 	return false;
 }

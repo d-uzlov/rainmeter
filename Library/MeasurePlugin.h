@@ -23,7 +23,7 @@ typedef void (*NEWRELOAD)(void*, void*, double*);
 typedef void (*NEWFINALIZE)(void*);
 typedef double (*NEWUPDATE)(void*);
 typedef LPCWSTR (*NEWGETSTRING)(void*);
-typedef INT32 (*GETIMAGE)(void*, UINT32**, INT32*, INT32*, INT64*);
+typedef LPCWSTR (*GETIMAGE)(void*, UINT32**, INT32*, INT32*, INT64*);
 typedef void (*NEWEXECUTEBANG)(void*, LPCWSTR);
 
 typedef LPCWSTR(*CUSTOMFUNCTION)(void*, const int, const WCHAR* argv[]);
