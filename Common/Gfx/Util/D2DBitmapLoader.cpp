@@ -86,7 +86,7 @@ HRESULT D2DBitmapLoader::LoadBitmapFromMemory(const Canvas& canvas, D2DBitmap* b
 
 	HRESULT hr = Gfx::Canvas::c_WICFactory->CreateBitmapFromMemory(
 		(UINT)imageWidth, (UINT)imageHeight,
-		GUID_WICPixelFormat32bppBGRA, (UINT)imageWidth * 4 ,
+		GUID_WICPixelFormat32bppRGBA, (UINT)imageWidth * 4 ,
 		((UINT)imageWidth * (UINT)imageHeight * 4) * sizeof(unsigned char),
 		reinterpret_cast<BYTE*>(imagePixels), &iwicBitmap);
 
